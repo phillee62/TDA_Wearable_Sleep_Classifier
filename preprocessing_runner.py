@@ -1,6 +1,4 @@
 import time
-# import Preprocessing
-
 from Preprocessing.source.analysis.setup.subject_builder import SubjectBuilder
 from Preprocessing.source.constants import Constants
 from Preprocessing.activity_count.activity_count_service import ActivityCountService
@@ -10,8 +8,6 @@ from Preprocessing.time.circadian_service import CircadianService
 
 from Preprocessing.Topological_features import Extract_TFs
 
-# import Preprocessing.Topological_features
-
 def run_preprocessing(subject_set):
     start_time = time.time()
 
@@ -20,9 +16,9 @@ def run_preprocessing(subject_set):
         RawDataProcessor.crop_all(str(subject))
 
     if Constants.INCLUDE_CIRCADIAN:
-        ActivityCountService.build_activity_counts()  # This uses MATLAB, but has been replaced with a python implementation
-        # CircadianService.build_circadian_model()      # Both of the circadian lines require MATLAB to run
-        # CircadianService.build_circadian_mesa()       # INCLUDE_CIRCADIAN = False by default because most people don't have MATLAB
+        # ActivityCountService.build_activity_counts()  # This uses MATLAB, but has been replaced with a python implementation
+        CircadianService.build_circadian_model()      # Compute motion-based clock proxy. This requires MATLAB to run
+        CircadianService.build_CRHR_model()      # Compute heart rate-based clock proxy. This also requires MATLAB to run
 
     for subject in subject_set:
         FeatureBuilder.build(str(subject))

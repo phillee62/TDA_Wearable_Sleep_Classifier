@@ -138,7 +138,7 @@ for subject_num = valid_subjects
             figure(1);
             plot(outputTimestampsSeconds - min(outputTimestampsSeconds),outputCircadianX); hold on; drawnow;
 
-            outputFilename = ['../../../../data/circadian_predictions/' int2str(subject_num) '_clock_proxy.txt'];
+            outputFilename = ['TDA_Wearable_Sleep_Classifier/Features/Clock_proxies/DLMO/' int2str(subject_num) '_clock_proxy.txt'];
             dlmwrite(outputFilename,output,'delimiter',',','precision',12); % w/o precision, won't save correctly
             
         end

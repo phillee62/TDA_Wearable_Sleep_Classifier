@@ -59,7 +59,7 @@ class PSGService(object):
 
     @staticmethod
     def read_precleaned(subject_id):
-        psg_path = str(utils.get_project_root().joinpath('data/labels/' + subject_id + '_labeled_sleep.txt'))
+        psg_path = str(utils.get_project_root().joinpath('TDA_Wearable_Sleep_Classifier/Raw_data/labels/' + subject_id + '_labeled_sleep.txt'))
         data = []
 
         with open(psg_path, 'rt') as csv_file:

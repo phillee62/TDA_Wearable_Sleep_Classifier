@@ -12,14 +12,13 @@ from gtda.time_series import takens_embedding_optimal_parameters
 from gtda.time_series import SingleTakensEmbedding
 from gtda.time_series import TakensEmbedding
 from gtda.time_series import Resampler
-from persim.persistent_entropy import *
 
 import warnings
 warnings.filterwarnings("ignore")
 
 def Load_motion(id):
-  # df = pd.read_csv('Preprocessed_data/' + str(id) + '_cleaned_motion.out', header = None)
-  df = pd.read_csv('Raw_data/' + str(i) + '_acceleration.txt', header = None)
+  # df = pd.read_csv('TDA_Wearable_Sleep_Classifier/Preprocessed_data/' + str(id) + '_cleaned_motion.out', header = None)
+  df = pd.read_csv('TDA_Wearable_Sleep_Classifier/Raw_data/' + str(id) + '_acceleration.txt', header = None)
   df_copy = df[0]
   t = []
   x = []
@@ -52,7 +51,7 @@ def Load_motion(id):
   return motion
 
 def Load_step(id):
-  df = pd.read_csv('Preprocessed_data/' + str(id) + '_cleaned_counts.out', header = None)
+  df = pd.read_csv('TDA_Wearable_Sleep_Classifier/Cropped_data/' + str(id) + '_cleaned_counts.out', header = None)
   # df = pd.read_csv('Raw_data/' + str(id) + '_acceleration.txt', header = None)
 
   steps = pd.DataFrame()
@@ -62,7 +61,7 @@ def Load_step(id):
   return steps
 
 def Load_hr(id):
-  df = pd.read_csv('Preprocessed_data/' + str(id) + '_cleaned_hr.out', header = None)
+  df = pd.read_csv('TDA_Wearable_Sleep_Classifier/Cropped_data/' + str(id) + '_cleaned_hr.out', header = None)
   df_copy = df[0]
   t = []
   hr = []
@@ -86,7 +85,7 @@ def Load_hr(id):
   return heart_rate
 
 def Load_sleep(id):
-  df = pd.read_csv('Preprocessed_data/' + str(id) + '_cleaned_psg.out', header = None)
+  df = pd.read_csv('TDA_Wearable_Sleep_Classifier/Cropped_data/' + str(id) + '_cleaned_psg.out', header = None)
   df_copy = df[0]
   t = []
   psg = []

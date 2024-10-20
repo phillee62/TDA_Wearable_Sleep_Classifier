@@ -45,31 +45,6 @@ def get_base_feature_sets():
     # so that it doesn't require MATLAB to run
 
 
-# def convert_pdf_to_txt(pdf_path_string, all_texts):
-#     resource_manager = PDFResourceManager()
-#     returned_string = StringIO()
-#     codec = 'utf-8'
-#     layout_parameters = LAParams(all_texts=all_texts)
-#     device = TextConverter(resource_manager, returned_string, codec=codec, laparams=layout_parameters)
-#     fp = open(pdf_path_string, 'rb')
-#     interpreter = PDFPageInterpreter(resource_manager, device)
-#     password = ""
-#     max_pages = 0
-#     caching = True
-#     page_numbers = set()
-
-#     for page in PDFPage.get_pages(fp, page_numbers, maxpages=max_pages, password=password, caching=caching,
-#                                   check_extractable=True):
-#         interpreter.process_page(page)
-
-#     text = returned_string.getvalue()
-
-#     fp.close()
-#     device.close()
-#     returned_string.close()
-#     return text
-
-
 def smooth_gauss(y, box_pts):
     box = np.ones(box_pts) / box_pts
     mu = int(box_pts / 2.0)

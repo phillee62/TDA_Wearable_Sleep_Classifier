@@ -9,9 +9,14 @@ class CircadianService(object):
     @staticmethod
     def build_circadian_model():
         os.system(Constants.MATLAB_PATH + ' -nodisplay -nosplash -nodesktop -r \"run(\'' + str(
-            utils.get_project_root()) + '/source/preprocessing/time/clock_proxy/runCircadianModel.m\'); exit;\"')
+            utils.get_project_root()) + '/source/preprocessing/time/clock_proxy/Circadian_DLMO_Model/runCircadianModel.m\'); exit;\"')
+
+    @staticmethod
+    def build_CRHR_model():
+        os.system(Constants.MATLAB_PATH + ' -nodisplay -nosplash -nodesktop -r \"run(\'' + str(
+            utils.get_project_root()) + '/source/preprocessing/time/clock_proxy/CRHR/run_CRHR_Model.m\'); exit;\"')
 
     @staticmethod
     def build_circadian_mesa():
         os.system(Constants.MATLAB_PATH + ' -nodisplay -nosplash -nodesktop -r \"run(\'' + str(
-            utils.get_project_root()) + '/source/preprocessing/time/clock_proxy/runCircadianMESA.m\'); exit;\"')
+            utils.get_project_root()) + '/source/preprocessing/time/clock_proxy/Circadian_DLMO_Model/runCircadianMESA.m\'); exit;\"')

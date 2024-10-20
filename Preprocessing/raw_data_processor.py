@@ -11,7 +11,7 @@ from .source.sleep_stage import SleepStage
 
 
 class RawDataProcessor:
-    BASE_FILE_PATH = utils.get_project_root().joinpath('outputs/cropped/')
+    BASE_FILE_PATH = 'TDA_Wearable_Sleep_Classifier/Cropped_data/'
 
     @staticmethod
     def crop_all(subject_id):

@@ -48,4 +48,4 @@ class MotionService(object):
     @staticmethod
     def get_raw_file_path(subject_id):
         project_root = utils.get_project_root()
-        return project_root.joinpath('data/motion/' + subject_id + '_acceleration.txt')
+        return project_root.joinpath('TDA_Wearable_Sleep_Classifier/Raw_data/motion/' + subject_id + '_acceleration.txt')
