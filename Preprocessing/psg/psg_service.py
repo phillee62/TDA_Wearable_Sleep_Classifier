@@ -59,7 +59,7 @@ class PSGService(object):
 
     @staticmethod
     def read_precleaned(subject_id):
-        psg_path = str(utils.get_project_root().joinpath('TDA_Wearable_Sleep_Classifier/Raw_data/labels/' + subject_id + '_labeled_sleep.txt'))
+        psg_path = str(utils.get_project_root().joinpath('Raw_data/labels/' + subject_id + '_labeled_sleep.txt'))
         data = []
 
         with open(psg_path, 'rt') as csv_file:
@@ -69,12 +69,16 @@ class PSGService(object):
             for row in file_reader:
                 if count == 0:
                     start_time = float(row[0])
-                    start_score = int(row[1])
+                    # start_score = int(row[1])
+                    start_score = float(row[1])
+
                     epoch = Epoch(timestamp=start_time, index=1)
                     data.append(StageItem(epoch=epoch, stage=PSGConverter.get_label_from_int(start_score)))
                 else:
                     timestamp = start_time + count * 30
-                    score = int(row[1])
+                    # score = int(row[1])
+                    score = float(row[1])
+
                     epoch = Epoch(timestamp=timestamp,
                                   index=(1 + int(np.floor(count / rows_per_epoch))))
 
@@ -103,13 +107,12 @@ class PSGService(object):
             data_array.append([stage_item.epoch.timestamp, stage_item.stage.value])
 
         np_psg_array = np.array(data_array)
-        psg_output_path = Constants.CROPPED_FILE_PATH.joinpath(psg_raw_data_collection.subject_id + "_cleaned_psg.out")
-
+        psg_output_path = Constants.CROPPED_FILE_PATH + 'psg/' + psg_raw_data_collection.subject_id + "_cleaned_psg.out"
         np.savetxt(psg_output_path, np_psg_array, fmt='%f')
 
     @staticmethod
     def load_cropped_array(subject_id):
-        cropped_psg_path = Constants.CROPPED_FILE_PATH.joinpath(subject_id + "_cleaned_psg.out")
+        cropped_psg_path = Constants.CROPPED_FILE_PATH + 'psg/' + str(subject_id) + "_cleaned_psg.out"
         return pd.read_csv(str(cropped_psg_path), delimiter=' ').values
 
     @staticmethod

@@ -14,7 +14,7 @@ class TimeBasedFeatureService(object):
 
     @staticmethod
     def get_path_for_time(subject_id):
-        return Constants.FEATURE_FILE_PATH.joinpath(subject_id + '_time_feature.out')
+        return Constants.FEATURE_FILE_PATH + 'Clock_proxies/time/' + str(subject_id) + '_time_feature.out'
 
     @staticmethod
     def write_time(subject_id, feature):
@@ -29,7 +29,8 @@ class TimeBasedFeatureService(object):
 
     @staticmethod
     def get_path_for_circadian_model(subject_id):
-        return Constants.FEATURE_FILE_PATH.joinpath(subject_id + '_circadian_feature.out')
+        # return Constants.FEATURE_FILE_PATH.joinpath(subject_id + '_circadian_feature.out')
+        return Constants.FEATURE_FILE_PATH + 'Clock_proxies/' + str(subject_id) + '_circadian_feature.out'
 
     @staticmethod
     def write_circadian_model(subject_id, feature):
@@ -44,7 +45,7 @@ class TimeBasedFeatureService(object):
 
     @staticmethod
     def get_path_for_cosine(subject_id):
-        return Constants.FEATURE_FILE_PATH.joinpath(subject_id + '_cosine_feature.out')
+        return Constants.FEATURE_FILE_PATH + 'Clock_proxies/DLMO/' + str(subject_id) + '_cosine_feature.out'
 
     @staticmethod
     def write_cosine(subject_id, feature):
@@ -65,7 +66,7 @@ class TimeBasedFeatureService(object):
 
     @staticmethod
     def build_circadian_model(subject_id, valid_epochs):
-        circadian_file = utils.get_project_root().joinpath('data/circadian_predictions/' + subject_id +
+        circadian_file = utils.get_project_root().joinpath('Features/clock_proxies/DLMO/' + subject_id +
                                                            '_clock_proxy.txt')
         if circadian_file.is_file():
             circadian_model = pd.read_csv(str(circadian_file), delimiter=',').values

@@ -18,7 +18,7 @@ class HeartRateFeatureService(object):
 
     @staticmethod
     def get_path(subject_id):
-        return Constants.FEATURE_FILE_PATH.joinpath(subject_id + '_hr_feature.out')
+        return Constants.FEATURE_FILE_PATH + '/Raw_features/' + str(subject_id) + '_hr_feature.out'
 
     @staticmethod
     def write(subject_id, feature):
@@ -50,7 +50,7 @@ class HeartRateFeatureService(object):
     @staticmethod
     def get_window(timestamps, epoch):
         start_time = epoch.timestamp - HeartRateFeatureService.WINDOW_SIZE
-        end_time = epoch.timestamp + Epoch.DURATION + HeartRateFeatureService.WINDOW_SIZE
+        end_time = epoch.timestamp + epoch.DURATION + HeartRateFeatureService.WINDOW_SIZE
         timestamps_ravel = timestamps.ravel()
         indices_in_range = np.unravel_index(np.where((timestamps_ravel > start_time) & (timestamps_ravel < end_time)),
                                             timestamps.shape)

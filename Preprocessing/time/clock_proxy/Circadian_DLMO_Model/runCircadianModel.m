@@ -9,14 +9,16 @@ maxDaysToAverage = 5; % Window of days to use in computing "average day"
 binSizeForStepsInMinutes = 10; % Bin size for integration
 
 close all;
-valid_subjects = [1, 2, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14, 15, 16, 19, 20, 22, 23, 25, 27, 28, 29, 30, 32, 33, 34, 35, 38, 39, 41, 42];
-    
+% valid_subjects = [1, 2, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14, 15, 16, 19, 20, 22, 23, 25, 27, 28, 29, 30, 32, 33, 34, 35, 38, 39, 41, 42];    
+valid_subjects = [46343, 759667, 781756, 844359, 1066528, 1360686, 1449548, 1455390, 1818471, 2598705, 2638030, 3509524, 3997827, 4018081, 4314139, 4426783, 5132496, 5383425, 5498603, 5797046, 6220552, 8000685, 8173033, 8258170, 8530312, 8686948, 8692923, 9106476, 9618981, 9961348, 7749105];
+
 for subject_num = valid_subjects
     fprintf('Running subject %d...\n',subject_num)
     
     % Load data
-    stepsFilename = ['../../../../data/steps/' int2str(subject_num) '_steps.txt'];
-    scoresFilename = ['../../../../outputs/cropped/' int2str(subject_num) '_cleaned_psg.out'];
+    % Replace this with local directory
+    stepsFilename = ['/Users/philliplee/Desktop/TDA_Wearable_Sleep_Classifier/Raw_data/steps/' int2str(subject_num) '_steps.txt'];
+    scoresFilename = ['/Users/philliplee/Desktop/TDA_Wearable_Sleep_Classifier/Cropped_files/psg/' int2str(subject_num) '_cleaned_psg.out'];
     
     if exist(stepsFilename, 'file') == 2
         if exist(scoresFilename, 'file') == 2
@@ -110,12 +112,12 @@ for subject_num = valid_subjects
             lightForSimulation(overhangIndices) = [];
             
             % Plot local window before night of sleep
-            plotIndices = find(timestampsForSimulation > min(scoreData(:,1) - secondsPerDay*2));
-            figure(2); hold on;
-            stairs(timestampsForSimulation(plotIndices) - timestampsForSimulation(plotIndices(1)),lightForSimulation(plotIndices));
-            
-            figure(3);
-            stairs(timestampsForSimulation(plotIndices) - timestampsForSimulation(plotIndices(1)),lightForSimulation(plotIndices));
+            % plotIndices = find(timestampsForSimulation > min(scoreData(:,1) - secondsPerDay*2));
+            % figure(2); hold on;
+            % stairs(timestampsForSimulation(plotIndices) - timestampsForSimulation(plotIndices(1)),lightForSimulation(plotIndices));
+            % 
+            % figure(3);
+            % stairs(timestampsForSimulation(plotIndices) - timestampsForSimulation(plotIndices(1)),lightForSimulation(plotIndices));
 
             % Scale for simulation
             shiftedTimestampsForSimulation = timestampsForSimulation - min(timestampsForSimulation);
@@ -135,12 +137,12 @@ for subject_num = valid_subjects
             output = [outputTimestampsSeconds; outputCircadianX; outputCircadianXC];
             output = output';
             
-            figure(1);
-            plot(outputTimestampsSeconds - min(outputTimestampsSeconds),outputCircadianX); hold on; drawnow;
-
-            outputFilename = ['TDA_Wearable_Sleep_Classifier/Features/Clock_proxies/DLMO/' int2str(subject_num) '_clock_proxy.txt'];
+            outputFilename = ['/Users/philliplee/Desktop/TDA_Wearable_Sleep_Classifier/Features/Clock_proxies/DLMO/' int2str(subject_num) '_clock_proxy.txt'];
             dlmwrite(outputFilename,output,'delimiter',',','precision',12); % w/o precision, won't save correctly
+            % csvwrite(outputFilename,output,'delimiter',',','precision',12); % w/o precision, won't save correctly
             
+            fprintf('Clock proxy analysis completed for subject %d...\n',subject_num)
+
         end
     end
 end

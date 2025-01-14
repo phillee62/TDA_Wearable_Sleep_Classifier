@@ -14,7 +14,7 @@ class PSGLabelService(object):
 
     @staticmethod
     def get_path(subject_id):
-        return Constants.FEATURE_FILE_PATH.joinpath(subject_id + '_psg_labels.out')
+        return Constants.FEATURE_FILE_PATH + '/Raw_features/' + str(subject_id) + '_psg_labels.out'
 
     @staticmethod
     def build(subject_id, valid_epochs):

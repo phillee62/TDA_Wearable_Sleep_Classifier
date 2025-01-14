@@ -1,24 +1,21 @@
 import numpy as np
 import pandas as pd
 import scipy
-import gtda
-import ripser
-import persim
+import gtda # Need to install giotto-tda via pip install -U giotto-tda
+import ripser # pip install ripser
+import persim # pip install persim
 from ripser import ripser
 from persim import plot_diagrams
 
 from scipy.interpolate import CubicSpline
 from gtda.time_series import takens_embedding_optimal_parameters
-from gtda.time_series import SingleTakensEmbedding
-from gtda.time_series import TakensEmbedding
-from gtda.time_series import Resampler
 
 import warnings
 warnings.filterwarnings("ignore")
 
 def Load_motion(id):
   # df = pd.read_csv('TDA_Wearable_Sleep_Classifier/Preprocessed_data/' + str(id) + '_cleaned_motion.out', header = None)
-  df = pd.read_csv('TDA_Wearable_Sleep_Classifier/Raw_data/' + str(id) + '_acceleration.txt', header = None)
+  df = pd.read_csv('Raw_data/motion/' + str(id) + '_acceleration.txt', header = None)
   df_copy = df[0]
   t = []
   x = []
@@ -48,11 +45,12 @@ def Load_motion(id):
   motion['y motion'] = y
   motion['z motion'] = z
 
+  motion = motion[motion['time'] >= 0]
+
   return motion
 
 def Load_step(id):
-  df = pd.read_csv('TDA_Wearable_Sleep_Classifier/Cropped_data/' + str(id) + '_cleaned_counts.out', header = None)
-  # df = pd.read_csv('Raw_data/' + str(id) + '_acceleration.txt', header = None)
+  df = pd.read_csv('Cropped_files/steps/' + str(id) + '_cleaned_counts.out', header = None)
 
   steps = pd.DataFrame()
   steps['time'] = df[0]
@@ -61,7 +59,7 @@ def Load_step(id):
   return steps
 
 def Load_hr(id):
-  df = pd.read_csv('TDA_Wearable_Sleep_Classifier/Cropped_data/' + str(id) + '_cleaned_hr.out', header = None)
+  df = pd.read_csv('Cropped_files/heart_rate/' + str(id) + '_cleaned_hr.out', header = None)
   df_copy = df[0]
   t = []
   hr = []
@@ -85,7 +83,7 @@ def Load_hr(id):
   return heart_rate
 
 def Load_sleep(id):
-  df = pd.read_csv('TDA_Wearable_Sleep_Classifier/Cropped_data/' + str(id) + '_cleaned_psg.out', header = None)
+  df = pd.read_csv('Cropped_files/psg/' + str(id) + '_cleaned_psg.out', header = None)
   df_copy = df[0]
   t = []
   psg = []
@@ -108,29 +106,14 @@ def Load_sleep(id):
 
   return sleep
 
-def Find_embedding_params(motion_Resampled: pd.DataFrame,
-                          hr: pd.DataFrame,
-                          sleep: pd.DataFrame,
-                          numEpoch: float,
-                          interp_intv: int,
-                          window_size: int):
+def Find_embedding_params(motion_Resampled: pd.DataFrame, hr: pd.DataFrame, interp_intv:int, num_nearby_epoch: int):
 
-  num_nearby_epoch = int((window_size-30)/(2*30))
   max_param1 = 12
+  # max_param1 = int(30/interp_intv)
   max_param2 = int(((num_nearby_epoch+1)*30)/max_param1)
 
-  ##### Interpolate heart rate data for each subject #####
-  tspan = np.arange(0,int(sleep.iloc[numEpoch,0]+30), interp_intv)
-  hr_CubicSpline = CubicSpline(hr['time'], hr['heart rate'])
-  hr_interpolate = hr_CubicSpline(tspan)
-  heart_rate = pd.DataFrame()
-  heart_rate['time'] = tspan
-  heart_rate['heart rate'] = hr_interpolate - np.mean(hr_interpolate)
-  hr_interpolate_orig = hr_CubicSpline(tspan)
-  hr_interpolate_orig-np.mean(hr_interpolate_orig)
-
   motion_embed_param = takens_embedding_optimal_parameters(motion_Resampled, max_param1, max_param2)
-  hr_embed_param = takens_embedding_optimal_parameters(hr_interpolate_orig, max_param1, max_param2)
+  hr_embed_param = takens_embedding_optimal_parameters(hr, max_param1, max_param2)
 
   return motion_embed_param, hr_embed_param
 
@@ -181,9 +164,22 @@ def HR_TFs(hr_embed: np.array):
 
   return hr_H0_TF, hr_H1_TF
 
-def Interpolate_data(motion: pd.DataFrame, hr: pd.DataFrame, sleep: pd.DataFrame, numEpoch: int):
-  motion_CubicSpline = CubicSpline(motion['time'], motion.iloc[:,1:4])
-  tspan = np.arange(0,int(sleep.iloc[numEpoch,0]+30), 1)
+def Interpolate_data(motion: pd.DataFrame, 
+                    hr: pd.DataFrame, 
+                    sleep: pd.DataFrame, 
+                    numEpoch: int,
+                    interp_intv: int,
+                    window_size: int):
+
+  ##### Determine maximum embedding parameters #####
+  num_nearby_epoch = int((window_size-30)/(2*30))
+  tspan = np.arange(0,int(sleep.iloc[numEpoch,0]+30), interp_intv)
+
+  ##### Interpolate motion data for each subject ####
+  # motion_CubicSpline = CubicSpline(motion['time'], motion.iloc[:,1:4])
+
+  motion = np.sort(motion, axis=0)
+  motion_CubicSpline = CubicSpline(motion[:,0], motion[:,1:4])
 
   motion_interpolate = motion_CubicSpline(tspan)
   motion_new = pd.DataFrame()
@@ -195,7 +191,9 @@ def Interpolate_data(motion: pd.DataFrame, hr: pd.DataFrame, sleep: pd.DataFrame
 
   ##### Interpolate heart rate data for each subject #####
   hr_CubicSpline = CubicSpline(hr['time'], hr['heart rate'])
-  tspan = np.arange(0,int(sleep.iloc[numEpoch,0]+30), 1)
+  # hr = np.sort(hr, axis=0)
+  # hr_CubicSpline = CubicSpline(hr[:,0], hr[:,1])
+
   hr_interpolate = hr_CubicSpline(tspan)
   heart_rate = pd.DataFrame()
   heart_rate['time'] = tspan
@@ -203,17 +201,36 @@ def Interpolate_data(motion: pd.DataFrame, hr: pd.DataFrame, sleep: pd.DataFrame
 
   return motion_new, heart_rate
 
-def Get_epoch_data(motion_new: pd.DataFrame, heart_rate: pd.DataFrame, sleep: pd.DataFrame, numEpoch: int, j: int):
+def Get_epoch_data(motion_new: pd.DataFrame, 
+                  heart_rate: pd.DataFrame, 
+                  sleep: pd.DataFrame, 
+                  numEpoch: int, 
+                  interp_intv: int, 
+                  window_size: int,
+                  j: int):
+
   sleep_epoch = sleep[(j*30 <= sleep.iloc[:,0]) & (sleep.iloc[:,0] < (j+1)*30)]
 
-  if j < 3:
-    motion_epoch = motion_new[(0 <= motion_new.iloc[:,0]) & (motion_new.iloc[:,0] < (j+4)*30)]
-    hr_epoch = heart_rate[(0 <= heart_rate.iloc[:,0]) & (heart_rate.iloc[:,0] < (j+4)*30)]
-  elif j > numEpoch-3:
-    motion_epoch = motion_new[((j-3)*30 <= motion_new.iloc[:,0]) & (motion_new.iloc[:,0] < (numEpoch+1)*30)]
-    hr_epoch = heart_rate[((j-3)*30 <= heart_rate.iloc[:,0]) & (heart_rate.iloc[:,0] < (numEpoch+1)*30)]
+  # if j < 3:
+  #   motion_epoch = motion_new[(0 <= motion_new.iloc[:,0]) & (motion_new.iloc[:,0] < (j+4)*30)]
+  #   hr_epoch = heart_rate[(0 <= heart_rate.iloc[:,0]) & (heart_rate.iloc[:,0] < (j+4)*30)]
+  # elif j > numEpoch-3:
+  #   motion_epoch = motion_new[((j-3)*30 <= motion_new.iloc[:,0]) & (motion_new.iloc[:,0] < (numEpoch+1)*30)]
+  #   hr_epoch = heart_rate[((j-3)*30 <= heart_rate.iloc[:,0]) & (heart_rate.iloc[:,0] < (numEpoch+1)*30)]
+  # else:
+  #   motion_epoch = motion_new[((j-3)*30 <= motion_new.iloc[:,0]) & (motion_new.iloc[:,0] < (j+4)*30)]
+  #   hr_epoch = heart_rate[((j-3)*30 <= heart_rate.iloc[:,0]) & (heart_rate.iloc[:,0] < (j+4)*30)]
+
+  num_nearby_epoch = int((window_size-30)/(2*30))
+
+  if j < num_nearby_epoch:
+    motion_epoch = motion_new[(0 <= motion_new.iloc[:,0]) & (motion_new.iloc[:,0] < j+(num_nearby_epoch+1)*30)]
+    hr_epoch = heart_rate[(0 <= heart_rate.iloc[:,0]) & (heart_rate.iloc[:,0] < j+(num_nearby_epoch+1)*30)]
+  elif j > numEpoch-num_nearby_epoch:
+    motion_epoch = motion_new[((j-num_nearby_epoch)*30 <= motion_new.iloc[:,0]) & (motion_new.iloc[:,0] < (numEpoch+1)*30)]
+    hr_epoch = heart_rate[((j-num_nearby_epoch)*30 <= heart_rate.iloc[:,0]) & (heart_rate.iloc[:,0] < (numEpoch+1)*30)]
   else:
-    motion_epoch = motion_new[((j-3)*30 <= motion_new.iloc[:,0]) & (motion_new.iloc[:,0] < (j+4)*30)]
-    hr_epoch = heart_rate[((j-3)*30 <= heart_rate.iloc[:,0]) & (heart_rate.iloc[:,0] < (j+4)*30)]
+    motion_epoch = motion_new[((j-num_nearby_epoch)*30 <= motion_new.iloc[:,0]) & (motion_new.iloc[:,0] < (j+(num_nearby_epoch+1))*30)]
+    hr_epoch = heart_rate[((j-num_nearby_epoch)*30 <= heart_rate.iloc[:,0]) & (heart_rate.iloc[:,0] < (j+(num_nearby_epoch+1))*30)]
 
   return motion_epoch, hr_epoch, sleep_epoch

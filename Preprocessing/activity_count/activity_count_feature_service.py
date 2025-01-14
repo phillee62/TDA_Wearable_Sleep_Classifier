@@ -1,9 +1,7 @@
 import numpy as np
 import pandas as pd
 
-# from source import utils
 from ..source import utils
-
 from ..source.constants import Constants
 from ..activity_count.activity_count_service import ActivityCountService
 from ..epoch import Epoch
@@ -20,7 +18,7 @@ class ActivityCountFeatureService(object):
 
     @staticmethod
     def get_path(subject_id):
-        return Constants.FEATURE_FILE_PATH.joinpath(subject_id + '_count_feature.out')
+        return Constants.FEATURE_FILE_PATH + '/Raw_features/' + str(subject_id) + '_count_feature.out'
 
     @staticmethod
     def write(subject_id, feature):

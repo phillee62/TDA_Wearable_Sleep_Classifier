@@ -11,8 +11,8 @@ class Constants(object):
     SECONDS_PER_HOUR = 3600
     VERBOSE = True
 
-    CROPPED_FILE_PATH = 'TDA_Wearable_Sleep_Classifier/Cropped_files/' # Make sure your current directory is "TDA_Wearable_Sleep_Classifier" 
-    FEATURE_FILE_PATH = 'TDA_Wearable_Sleep_Classifier/Features/'
+    CROPPED_FILE_PATH = 'Cropped_files/' # Make sure your current directory is "TDA_Wearable_Sleep_Classifier" 
+    FEATURE_FILE_PATH = 'Features/'
 
     LOWER_BOUND = -0.2
     MATLAB_PATH = '/Applications/MATLAB_R2023b.app/bin/matlab'  # Replace with your MATLAB path

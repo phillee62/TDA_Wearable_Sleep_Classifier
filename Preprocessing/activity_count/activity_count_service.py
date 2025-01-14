@@ -24,12 +24,12 @@ class ActivityCountService(object):
 
     @staticmethod
     def get_cropped_file_path(subject_id):
-        return Constants.CROPPED_FILE_PATH.joinpath(subject_id + "_cleaned_counts.out")
+        return Constants.CROPPED_FILE_PATH + 'steps/' + str(subject_id) + "_cleaned_counts.out"
 
     @staticmethod
     def build_activity_counts():
         os.system(Constants.MATLAB_PATH + ' -nodisplay -nosplash -nodesktop -r \"run(\'' + str(
-            utils.get_project_root()) + '/source/make_counts.m\'); exit;\"')
+            utils.get_project_root()) + '/Preprocessing/source/make_counts.m\'); exit;\"')
 
     @staticmethod
     def build_activity_counts_without_matlab(subject_id, data):
